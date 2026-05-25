@@ -1,0 +1,8 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background square for contrast (like YouTube/Vercel often use negative space) -->
+  <rect width="32" height="32" rx="6" fill="black"/>
+  <!-- Minimalist Cyberdeck Icon: A stylized 'C' or a terminal prompt -->
+  <!-- Using a chevron-like shape reminiscent of a terminal/cyberdeck interface -->
+  <path d="M10 8L18 16L10 24" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="18" y="22" width="6" height="2" fill="white"/>
+</svg>
