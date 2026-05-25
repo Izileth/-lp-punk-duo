@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { seededRandom } from "../utils/random";
 
 const MATRIX_CHARS = "01アイウエオカキクケコ" as const;
 
@@ -14,19 +15,11 @@ interface SplashScreenProps {
     onFinish: () => void;
 }
 
-// Gerador pseudo-aleatório determinístico baseado em seed
-function seededRandom(seed: number): number {
-    const x = (seed * 9301 + 49297) % 233280;
-    return x / 233280;
-}
-
 function getCharAt(str: string, index: number): string {
     return str.charAt(index % str.length);
 }
 
-export function SplashScreen({ onFinish }: SplashScreenProps) {
-    const [progress, setProgress] = useState<number>(0);
-
+function MatrixRain() {
     const matrixColumns = useMemo<MatrixColumn[]>(() => {
         return Array.from({ length: 50 }, (_, i): MatrixColumn => {
             const seed1 = i * 123;
@@ -49,6 +42,53 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
         });
     }, []);
 
+    return (
+        <div className="absolute inset-0 pointer-events-none">
+            {matrixColumns.map((col: MatrixColumn) => (
+                <div
+                    key={col.id}
+                    className="absolute text-white/10 animate-matrix"
+                    style={{
+                        left: `${col.left}%`,
+                        top: '-10%',
+                        animationDelay: `${col.delay}s`,
+                        animationDuration: `${col.duration}s`,
+                        fontSize: "12px",
+                    }}
+                >
+                    {col.char}
+                </div>
+            ))}
+            <style>{`
+                @keyframes matrix {
+                    0% {
+                        transform: translateY(0);
+                        opacity: 0;
+                    }
+                    10% {
+                        opacity: 1;
+                    }
+                    90% {
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translateY(120vh);
+                        opacity: 0;
+                    }
+                }
+                .animate-matrix {
+                    animation-name: matrix;
+                    animation-timing-function: linear;
+                    animation-iteration-count: infinite;
+                }
+            `}</style>
+        </div>
+    );
+}
+
+export function SplashScreen({ onFinish }: SplashScreenProps) {
+    const [progress, setProgress] = useState<number>(0);
+
     useEffect(() => {
         let counter = 0;
 
@@ -61,7 +101,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
                 }
 
                 const increment = ((seededRandom(counter++) * 6) | 0) + 3;
-                return prev + increment;
+                return Math.min(prev + increment, 100);
             });
         }, 120);
 
@@ -70,23 +110,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
 
     return (
         <div className="fixed inset-0 bg-black text-white z-50 overflow-hidden flex items-center justify-center">
-            {/* Matrix Rain */}
-            <div className="absolute inset-0 pointer-events-none">
-                {matrixColumns.map((col: MatrixColumn) => (
-                    <div
-                        key={col.id}
-                        className="absolute text-white/10 animate-matrix"
-                        style={{
-                            left: `${col.left}%`,
-                            animationDelay: `${col.delay}s`,
-                            animationDuration: `${col.duration}s`,
-                            fontSize: "12px",
-                        }}
-                    >
-                        {col.char}
-                    </div>
-                ))}
-            </div>
+            <MatrixRain />
 
             {/* Progress Loader */}
             <div className="relative z-10 flex flex-col items-center gap-5 w-64">
@@ -105,24 +129,6 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
                     {progress}%
                 </span>
             </div>
-
-            <style>{`
-        @keyframes matrix {
-          0% {
-            transform: translateY(-100%);
-            opacity: 0;
-          }
-          100% {
-            transform: translateY(120vh);
-            opacity: 1;
-          }
-        }
-        .animate-matrix {
-          animation-name: matrix;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-        }
-      `}</style>
         </div>
     );
 }
