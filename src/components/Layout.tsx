@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Layout() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -19,7 +20,12 @@ export default function Layout() {
     return (
         <div className="min-h-screen bg-black text-white">
             {/* ── TOP NAV ─────────────────────────────────────── */}
-            <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-6 py-4 bg-black/50 backdrop-blur-sm">
+            <motion.nav 
+                initial={{ y: -100 }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-6 py-4 bg-black/50 backdrop-blur-sm"
+            >
 
                 {/* Left links — hidden on mobile */}
                 <div className="hidden md:flex items-center gap-4 lg:gap-6">
@@ -58,29 +64,50 @@ export default function Layout() {
                         </a>
                     ))}
                 </div>
-            </nav>
+            </motion.nav>
 
             {/* ── MOBILE FULLSCREEN MENU ──────────────────────── */}
-            <div className={`
-        fixed inset-0 z-40 bg-black flex flex-col items-center justify-center gap-8
-        transition-all duration-500 md:hidden
-        ${menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
-      `}>
-                {leftLinks.map((item) => (
-                    <Link key={item.name} to={item.path}
-                        onClick={() => setMenuOpen(false)}
-                        className="text-white text-2xl tracking-[0.3em] uppercase font-light hover:opacity-50 transition-opacity">
-                        {item.name}
-                    </Link>
-                ))}
-                {rightLinks.map((item) => (
-                    <a key={item.name} href={item.path} target="_blank" rel="noopener noreferrer"
-                        onClick={() => setMenuOpen(false)}
-                        className="text-white text-2xl tracking-[0.3em] uppercase font-light hover:opacity-50 transition-opacity">
-                        {item.name}
-                    </a>
-                ))}
-            </div>
+            <AnimatePresence>
+                {menuOpen && (
+                    <motion.div 
+                        initial={{ opacity: 0, x: "100%" }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: "100%" }}
+                        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                        className="fixed inset-0 z-40 bg-black flex flex-col items-center justify-center gap-8 md:hidden"
+                    >
+                        {leftLinks.map((item, idx) => (
+                            <motion.div
+                                key={item.name}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.1 }}
+                            >
+                                <Link to={item.path}
+                                    onClick={() => setMenuOpen(false)}
+                                    className="text-white text-2xl tracking-[0.3em] uppercase font-light hover:opacity-50 transition-opacity">
+                                    {item.name}
+                                </Link>
+                            </motion.div>
+                        ))}
+                        <div className="h-[1px] w-12 bg-white/20 my-2" />
+                        {rightLinks.map((item, idx) => (
+                            <motion.div
+                                key={item.name}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: (idx + leftLinks.length) * 0.1 }}
+                            >
+                                <a href={item.path} target="_blank" rel="noopener noreferrer"
+                                    onClick={() => setMenuOpen(false)}
+                                    className="text-white text-xl tracking-[0.3em] uppercase font-extralight hover:opacity-50 transition-opacity">
+                                    {item.name}
+                                </a>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <main>
                 <Outlet />

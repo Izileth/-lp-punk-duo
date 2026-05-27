@@ -1,43 +1,41 @@
-import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 
 export default function Home() {
-    const titleRef = useRef<HTMLHeadingElement>(null);
-
-    useEffect(() => {
-        const el = titleRef.current;
-        if (!el) return;
-        el.style.opacity = "0";
-        el.style.transform = "translateY(30px)";
-        requestAnimationFrame(() => {
-            el.style.transition = "opacity 0.9s ease, transform 0.9s ease";
-            el.style.opacity = "1";
-            el.style.transform = "translateY(0)";
-        });
-    }, []);
-
     return (
         <div className="relative w-full min-h-screen bg-black overflow-hidden flex flex-col">
             {/* ── LEFT DOTS — hidden on small mobile ──────────── */}
-            <div className="hidden sm:flex absolute left-3 md:left-4 top-1/2 -translate-y-1/2 z-30 flex-col gap-3">
+            <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="hidden sm:flex absolute left-3 md:left-4 top-1/2 -translate-y-1/2 z-30 flex-col gap-3"
+            >
                 {[0, 1, 2].map((i) => (
                     <span key={i} className="text-white text-[9px] tracking-widest opacity-60">·</span>
                 ))}
-            </div>
+            </motion.div>
 
             {/* ── RIGHT VERTICAL LABEL — hidden on small mobile ── */}
-            <div className="hidden sm:flex absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-30">
+            <motion.div 
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="hidden sm:flex absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-30"
+            >
                 <span
                     className="text-white text-[8px] tracking-[0.25em] uppercase opacity-40 font-light"
                     style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
                 >
                     About the duo
                 </span>
-            </div>
+            </motion.div>
 
             {/* ── GIANT TITLE ─────────────────────────────────── */}
             <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none px-2">
-                <h1
-                    ref={titleRef}
+                <motion.h1
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                     className="text-white font-black uppercase leading-none select-none text-center"
                     style={{
                         fontSize: "clamp(52px, 16vw, 200px)",
@@ -46,12 +44,15 @@ export default function Home() {
                     }}
                 >
                     DAFT PUNK
-                </h1>
+                </motion.h1>
             </div>
 
             {/* ── IMAGE PLACEHOLDER ───────────────────────────── */}
             <div className="absolute inset-0 flex items-end justify-center z-20 pointer-events-none">
-                <div
+                <motion.div
+                    initial={{ opacity: 0, y: 60 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                     className="relative flex items-end justify-center"
                     style={{
                         width: "clamp(260px, 65%, 600px)",
@@ -71,16 +72,25 @@ export default function Home() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             </div>
 
             {/* ── BOTTOM SCROLL ICON ──────────────────────────── */}
-            <div className="absolute bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-1">
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1, delay: 1 }}
+                className="absolute bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-1"
+            >
                 <div className="w-[1px] h-4 bg-white opacity-30" />
-                <div className="w-4 h-4 rounded-full border border-white opacity-40 flex items-center justify-center">
+                <motion.div 
+                    animate={{ y: [0, 5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="w-4 h-4 rounded-full border border-white opacity-40 flex items-center justify-center"
+                >
                     <div className="w-[3px] h-[3px] rounded-full bg-white opacity-70" />
-                </div>
-            </div>
+                </motion.div>
+            </motion.div>
         </div>
     );
 }
