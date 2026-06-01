@@ -2,11 +2,10 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const BOOT_TEXTS = [
-    "SYSTEM.INIT(DP_PROTOCOL)",
-    "LOADING_MODULES... [OK]",
-    "MEMORY.LINKED(VIRTUAL_VIBE)",
-    "AUTHENTICATING_USERS...",
-    "ACCESS_GRANTED",
+    "PROTOCOL: DAFT_PUNK",
+    "SYSTEM: READY",
+    "LINK: ESTABLISHED",
+    "ACCESS: GRANTED",
 ];
 
 export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
@@ -16,10 +15,10 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         if (currentLine < BOOT_TEXTS.length) {
             const timer = setTimeout(() => {
                 setCurrentLine(prev => prev + 1);
-            }, 400);
+            }, 300);
             return () => clearTimeout(timer);
         } else {
-            const timer = setTimeout(onFinish, 800);
+            const timer = setTimeout(onFinish, 1200);
             return () => clearTimeout(timer);
         }
     }, [currentLine, onFinish]);
@@ -29,85 +28,99 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
             initial={{ opacity: 1 }}
             exit={{ 
                 opacity: 0, 
-                scale: 1.1,
-                filter: "blur(10px) brightness(2)",
-                transition: { duration: 0.8, ease: "circIn" }
+                filter: "blur(20px)",
+                transition: { duration: 1, ease: [0.16, 1, 0.3, 1] }
             }}
-            className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center font-mono overflow-hidden"
+            className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center overflow-hidden"
         >
-            {/* ── SCANLINE EFFECT ────────────────────────────── */}
-            <div className="absolute inset-0 pointer-events-none z-50">
+            {/* ── ALIGNED DOTS (FROM HOME) ────────────────────── */}
+            <div className="absolute left-6 top-1/2 -translate-y-1/2 hidden md:flex flex-col gap-4">
+                {[0, 1, 2].map((i) => (
+                    <motion.span 
+                        key={i}
+                        animate={{ opacity: [0.2, 0.6, 0.2] }}
+                        transition={{ duration: 2, delay: i * 0.5, repeat: Infinity }}
+                        className="text-white text-[10px]"
+                    >·</motion.span>
+                ))}
+            </div>
+
+            {/* ── VERTICAL LABEL (FROM HOME) ──────────────────── */}
+            <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden md:block">
+                <span
+                    className="text-white text-[9px] tracking-[0.4em] uppercase opacity-40 font-light"
+                    style={{ writingMode: "vertical-rl" }}
+                >
+                    System Initialization
+                </span>
+            </div>
+
+            {/* ── SCANLINE EFFECT (SUBTLE) ────────────────────── */}
+            <div className="absolute inset-0 pointer-events-none opacity-20">
                 <motion.div 
-                    animate={{ y: ["0%", "1000%"] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                    className="w-full h-[2px] bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                    animate={{ y: ["-100%", "100%"] }}
+                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                    className="w-full h-[30vh] bg-gradient-to-b from-transparent via-white/5 to-transparent"
                 />
             </div>
 
-            {/* ── CRT FLICKER OVERLAY ────────────────────────── */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] pointer-events-none" />
-
-            {/* ── CENTRAL LOGO ───────────────────────────────── */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ 
-                    opacity: [0, 1, 0.8, 1],
-                    scale: 1,
-                    filter: ["none", "none", "invert(1) opacity(0.5)", "none"]
-                }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-                className="mb-12 relative"
-            >
-                <div className="flex items-center gap-4 text-4xl font-bold tracking-[0.3em] text-white">
-                    <span>D</span>
-                    <span className="w-8 h-[2px] bg-white" />
-                    <span>P</span>
-                </div>
-                {/* Glitch layers */}
-                <motion.div 
-                    animate={{ x: [-2, 2, -1, 0] }}
-                    transition={{ duration: 0.1, repeat: Infinity, repeatDelay: 2 }}
-                    className="absolute inset-0 text-white/30 blur-[1px] translate-x-1"
+            {/* ── CENTRAL GIANT LOGO (ALIGNED WITH HOME) ──────── */}
+            <div className="relative flex items-center justify-center">
+                <motion.h1
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ 
+                        opacity: 1, 
+                        y: 0,
+                        textShadow: [
+                            "0 0 0px rgba(255,255,255,0)",
+                            "0 0 20px rgba(255,255,255,0.2)",
+                            "0 0 0px rgba(255,255,255,0)"
+                        ]
+                    }}
+                    transition={{ 
+                        duration: 1.5, 
+                        ease: [0.16, 1, 0.3, 1],
+                        textShadow: { duration: 2, repeat: Infinity }
+                    }}
+                    className="text-white font-black uppercase leading-none select-none text-center"
+                    style={{
+                        fontSize: "clamp(64px, 12vw, 160px)",
+                        letterSpacing: "-0.04em",
+                        fontFamily: "'Arial Black', 'Arial', sans-serif",
+                    }}
                 >
-                    <div className="flex items-center gap-4 text-4xl font-bold tracking-[0.3em]">
-                        <span>D</span>
-                        <span className="w-8 h-[2px] bg-white/30" />
-                        <span>P</span>
-                    </div>
-                </motion.div>
-            </motion.div>
+                    DAFT PUNK
+                </motion.h1>
 
-            {/* ── BOOT SEQUENCE TEXT ─────────────────────────── */}
-            <div className="flex flex-col gap-2 min-h-[120px]">
+                {/* Technical Overlay */}
+                <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 1, delay: 0.5 }}
+                    className="absolute -bottom-4 w-full h-[1px] bg-white/20 origin-center"
+                />
+            </div>
+
+            {/* ── TERMINAL LINES (REFINED) ───────────────────── */}
+            <div className="absolute bottom-12 left-12 flex flex-col gap-1">
                 {BOOT_TEXTS.map((text, i) => (
                     <motion.div
                         key={i}
-                        initial={{ opacity: 0, x: -10 }}
+                        initial={{ opacity: 0, x: -5 }}
                         animate={{ 
-                            opacity: i <= currentLine ? 1 : 0,
-                            x: i <= currentLine ? 0 : -10
+                            opacity: i <= currentLine ? 0.6 : 0,
+                            x: i <= currentLine ? 0 : -5
                         }}
-                        className={`text-[10px] sm:text-xs tracking-[0.2em] ${
-                            i === currentLine ? "text-white" : "text-white/40"
-                        }`}
+                        className="text-white font-mono text-[9px] tracking-[0.2em] uppercase"
                     >
-                        <span className="mr-3">{i === currentLine ? ">" : " "}</span>
                         {text}
                     </motion.div>
                 ))}
             </div>
 
-            {/* ── LOADING BAR ────────────────────────────────── */}
-            <div className="mt-12 w-48 h-[1px] bg-white/10 relative">
-                <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(currentLine / BOOT_TEXTS.length) * 100}%` }}
-                    className="absolute inset-y-0 left-0 bg-white shadow-[0_0_8px_white]"
-                />
-            </div>
-
-            <div className="absolute bottom-8 text-[8px] tracking-[0.5em] text-white/20 uppercase">
-                Hardware: Cyberdeck v2.6.1
+            {/* ── FOOTER ELEMENTS ────────────────────────────── */}
+            <div className="absolute bottom-8 right-12 text-[8px] tracking-[0.5em] text-white/30 uppercase font-light">
+                Ver 2026.1 // Cyberdeck
             </div>
         </motion.div>
     );
