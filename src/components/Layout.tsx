@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Layout() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const location = useLocation();
 
     const leftLinks = [
         { name: "Home", path: "/" },
@@ -16,6 +17,12 @@ export default function Layout() {
         { name: "iTunes", path: "https://www.apple.com/itunes", external: true },
         { name: "Deezer", path: "https://www.deezer.com", external: true },
     ];
+
+    const pageVariants = {
+        initial: { opacity: 0, filter: "blur(10px)" },
+        animate: { opacity: 1, filter: "blur(0px)" },
+        exit: { opacity: 0, filter: "blur(10px)" },
+    };
 
     return (
         <div className="min-h-screen bg-black text-white">
@@ -110,7 +117,18 @@ export default function Layout() {
             </AnimatePresence>
 
             <main>
-                <Outlet />
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={location.pathname}
+                        variants={pageVariants}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
+                        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                        <Outlet />
+                    </motion.div>
+                </AnimatePresence>
             </main>
         </div>
     );
