@@ -1,23 +1,26 @@
-# LP Models — Minimalist Experience
+# Punk Duo — Daft Punk Experience
 
-Uma experiência web minimalista e sofisticada desenvolvida com React e TypeScript, focada em interatividade suave e estética refinada.
+Uma experiência web minimalista e sofisticada dedicada ao lendário duo Daft Punk. Desenvolvida com React e TypeScript, focada em interatividade suave, estética "high-tech" e design refinado.
 
-##  Sobre o Projeto
+## 🚀 Sobre o Projeto
 
-Este projeto é um teste de conceito (PoC) que explora o design minimalista e o uso de micro-interações para criar uma interface envolvente. O fluxo consiste em:
+Este projeto é uma exploração de design minimalista que utiliza micro-interações e animações fluidas para criar uma interface envolvente e temática. O fluxo consiste em:
 
-- **SplashScreen**: Uma tela de carregamento inspirada em Matrix com chuva de caracteres e indicador de progresso determinístico.
-- **Reveal Card**: Uma página principal em "Dark Mode" com partículas flutuantes que esconde uma mensagem central. Ao interagir, o card revela o conceito principal com animações de celebração.
+- **SplashScreen**: Uma sequência técnica de inicialização de sistema com textos de boot e estética de terminal.
+- **Home**: Uma página principal minimalista em "Dark Mode" com tipografia arrojada, animações de entrada suaves e placeholders para visuais icônicos.
+- **About**: Uma seção detalhada sobre a história, origens e gêneros explorados pelo duo em sua trajetória.
+- **Shop**: Uma vitrine elegante de produtos e colecionáveis oficiais, seguindo o padrão visual de alta fidelidade do projeto.
 
-##  Tecnologias
+## 🛠️ Tecnologias
 
 - **React 19** & **TypeScript**
 - **Vite** (Build tool & HMR)
-- **Tailwind CSS** (Estilização utilitária)
+- **Tailwind CSS** (Estilização utilitária e responsividade)
+- **Framer Motion** (Orquestração de animações complexas)
 - **Lucide React** (Ícones minimalistas)
-- **CSS Animations** (Partículas e efeitos visuais)
+- **React Router** (Navegação dinâmica)
 
-##  Instalação e Uso
+## 📦 Instalação e Uso
 
 1. Instale as dependências:
    ```bash
@@ -34,6 +37,9 @@ Este projeto é um teste de conceito (PoC) que explora o design minimalista e o 
    npm run build
    ```
 
-##  Filosofia de Design
+## 🎨 Filosofia de Design
 
-O projeto segue a premissa de que *"A simplicidade é a sofisticação máxima"*. Utiliza tipografia com espaçamento generoso (tracking), paleta de cores monocromática e transições suaves para guiar o usuário através da experiência.
+O projeto segue a premissa de que *"A simplicidade é a sofisticação máxima"*. Utiliza:
+- **Tipografia**: Espaçamento generoso (tracking) e pesos contrastantes.
+- **Paleta**: Monocromática (Black & White) para um visual atemporal.
+- **Movimento**: Transições suaves e efeitos de "scanline" para evocar uma atmosfera futurista e tecnológica.
