@@ -1,11 +1,15 @@
 import { motion } from "framer-motion";
+import img1 from "../assets/imgs/dk2.jpg";
+import img2 from "../assets/imgs/dk3.jpg";
+import img3 from "../assets/imgs/dk4.jpg";
+import img4 from "../assets/imgs/dk5.jpg";
 
 export default function Shop() {
     const products = [
-        { id: 1, name: "Discovery Vinyl", price: "$34.99" },
-        { id: 2, name: "Random Access Memories", price: "$39.99" },
-        { id: 3, name: "Homework CD", price: "$14.99" },
-        { id: 4, name: "Helmet Poster", price: "$19.99" },
+        { id: 1, name: "Discovery Vinyl", price: "$34.99", image: img1 },
+        { id: 2, name: "Random Access Memories", price: "$39.99", image: img2 },
+        { id: 3, name: "Homework CD", price: "$14.99", image: img3 },
+        { id: 4, name: "Helmet Poster", price: "$19.99", image: img4 },
     ];
 
     const containerVariants = {
@@ -47,8 +51,12 @@ export default function Shop() {
                         whileHover={{ y: -5, borderColor: "rgba(255,255,255,0.3)" }}
                         className="group border border-white/10 p-4 bg-white/5 hover:bg-white/10 transition-all cursor-pointer"
                     >
-                        <div className="aspect-square bg-white/5 border border-dashed border-white/20 mb-4 flex items-center justify-center">
-                            <span className="text-white/20 text-[8px] tracking-[0.3em] uppercase">Product Image</span>
+                        <div className="aspect-square bg-black border border-white/10 mb-4 overflow-hidden">
+                            <img 
+                                src={product.image} 
+                                alt={product.name} 
+                                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                            />
                         </div>
                         <h3 className="text-white text-[10px] tracking-[0.2em] uppercase mb-2 font-bold">{product.name}</h3>
                         <p className="text-white/50 text-[10px] tracking-[0.2em] uppercase">{product.price}</p>

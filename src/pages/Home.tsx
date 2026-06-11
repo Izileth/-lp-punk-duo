@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import heroImg from "../assets/imgs/dk.jpg";
 
 export default function Home() {
     return (
@@ -47,31 +48,24 @@ export default function Home() {
                 </motion.h1>
             </div>
 
-            {/* ── IMAGE PLACEHOLDER ───────────────────────────── */}
+            {/* ── IMAGE CONTENT ───────────────────────────── */}
             <div className="absolute inset-0 flex items-end justify-center z-20 pointer-events-none">
                 <motion.div
                     initial={{ opacity: 0, y: 60 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                    className="relative flex items-end justify-center"
+                    className="relative flex items-end justify-center overflow-hidden"
                     style={{
                         width: "clamp(260px, 65%, 600px)",
                         height: "clamp(55%, 75%, 85%)",
                     }}
                 >
-                    <div
-                        className="w-full h-full border border-dashed border-white/20 flex items-center justify-center"
-                        style={{ background: "rgba(255,255,255,0.03)" }}
-                    >
-                        <div className="text-center px-4">
-                            <div className="text-white/20 text-[10px] sm:text-xs tracking-[0.3em] uppercase mb-2">
-                                Image Placeholder
-                            </div>
-                            <div className="text-white/10 text-[9px] sm:text-[10px] tracking-widest">
-                                Adicione a imagem principal aqui
-                            </div>
-                        </div>
-                    </div>
+                    <img 
+                        src={heroImg} 
+                        alt="Daft Punk Hero" 
+                        className="w-full h-full object-cover grayscale opacity-80"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
                 </motion.div>
             </div>
 
