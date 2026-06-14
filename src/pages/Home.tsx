@@ -32,7 +32,7 @@ export default function Home() {
             </motion.div>
 
             {/* ── GIANT TITLE ─────────────────────────────────── */}
-            <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none px-2">
+            <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none px-2">
                 <motion.h1
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -42,6 +42,7 @@ export default function Home() {
                         fontSize: "clamp(52px, 16vw, 200px)",
                         letterSpacing: "-0.02em",
                         fontFamily: "'Arial Black', 'Arial', sans-serif",
+                        textShadow: "0 0 40px rgba(0,0,0,0.6), 0 0 80px rgba(0,0,0,0.4)",
                     }}
                 >
                     DAFT PUNK
@@ -63,9 +64,9 @@ export default function Home() {
                     <img 
                         src={heroImg} 
                         alt="Daft Punk Hero" 
-                        className="w-full h-full object-cover grayscale opacity-80"
+                        className="w-full h-full object-cover grayscale opacity-70"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
                 </motion.div>
             </div>
 
