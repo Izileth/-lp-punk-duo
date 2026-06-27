@@ -67,6 +67,7 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
             {/* ── CENTRAL GIANT LOGO (ALIGNED WITH HOME) ──────── */}
             <div className="relative flex items-center justify-center">
                 <motion.h1
+                    layoutId="main-title"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ 
                         opacity: 1, 

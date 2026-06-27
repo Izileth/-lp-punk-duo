@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -12,17 +12,11 @@ export default function App() {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
       {showSplash ? (
         <SplashScreen key="splash" onFinish={() => setShowSplash(false)} />
       ) : (
-        <motion.div
-          key="content"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="w-full"
-        >
+        <div key="content" className="w-full">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
@@ -30,7 +24,7 @@ export default function App() {
               <Route path="shop" element={<Shop />} />
             </Route>
           </Routes>
-        </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );

@@ -6,9 +6,9 @@ export default function Home() {
         <div className="relative w-full min-h-screen bg-black overflow-hidden flex flex-col">
             {/* ── LEFT DOTS — hidden on small mobile ──────────── */}
             <motion.div 
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: -15 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.5 }}
+                transition={{ duration: 1.0, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 className="hidden sm:flex absolute left-3 md:left-4 top-1/2 -translate-y-1/2 z-30 flex-col gap-3"
             >
                 {[0, 1, 2].map((i) => (
@@ -18,9 +18,9 @@ export default function Home() {
 
             {/* ── RIGHT VERTICAL LABEL — hidden on small mobile ── */}
             <motion.div 
-                initial={{ opacity: 0, x: 20 }}
+                initial={{ opacity: 0, x: 15 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.5 }}
+                transition={{ duration: 1.0, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 className="hidden sm:flex absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-30"
             >
                 <span
@@ -34,9 +34,14 @@ export default function Home() {
             {/* ── GIANT TITLE ─────────────────────────────────── */}
             <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none px-2">
                 <motion.h1
-                    initial={{ opacity: 0, y: 40 }}
+                    layoutId="main-title"
+                    initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ 
+                        layout: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
+                        duration: 1.2, 
+                        ease: [0.16, 1, 0.3, 1] 
+                    }}
                     className="text-white font-black uppercase leading-none select-none text-center"
                     style={{
                         fontSize: "clamp(52px, 16vw, 200px)",
@@ -52,9 +57,9 @@ export default function Home() {
             {/* ── IMAGE CONTENT ───────────────────────────── */}
             <div className="absolute inset-0 flex items-end justify-center z-20 pointer-events-none">
                 <motion.div
-                    initial={{ opacity: 0, y: 60 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    initial={{ opacity: 0, y: 80, scale: 1.05 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 1.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                     className="relative flex items-end justify-center overflow-hidden"
                     style={{
                         width: "clamp(260px, 65%, 600px)",
@@ -72,9 +77,9 @@ export default function Home() {
 
             {/* ── BOTTOM SCROLL ICON ──────────────────────────── */}
             <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1, delay: 1 }}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.0, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className="absolute bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-1"
             >
                 <div className="w-[1px] h-4 bg-white opacity-30" />
