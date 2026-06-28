@@ -20,7 +20,7 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
     const reelsData = useMemo(() => {
         const glyphs = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$@#%&?*";
         const reelLength = 15;
-        return words.map((word) => 
+        return words.map((word) =>
             word.split("").map((char) => {
                 const reelChars = [char];
                 for (let i = 0; i < reelLength - 2; i++) {
@@ -35,61 +35,14 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         );
     }, []);
 
-    // Boot lines sequence
-    useEffect(() => {
-        if (currentLine < BOOT_TEXTS.length) {
-            const timer = setTimeout(() => {
-                setCurrentLine(prev => prev + 1);
-            }, 250);
-            return () => clearTimeout(timer);
-        } else if (!isExiting) {
-            const timer = setTimeout(() => {
-                setIsExiting(true);
-                triggerGlitchExit();
-            }, 1000);
-            return () => clearTimeout(timer);
-        }
-    }, [currentLine, isExiting]);
-
-    // Entrance animation for Logo and basic elements
-    useEffect(() => {
-        gsap.fromTo(".splash-title", 
-            { opacity: 0, y: 30, skewX: -20 },
-            { 
-                opacity: 1, 
-                y: 0, 
-                skewX: 0, 
-                duration: 1.2, 
-                ease: "power4.out",
-                keyframes: [
-                    { opacity: 0.3, skewX: 10, duration: 0.1 },
-                    { opacity: 0.1, duration: 0.05 },
-                    { opacity: 0.9, skewX: -5, duration: 0.15 },
-                    { opacity: 1, skewX: 0, duration: 0.9 }
-                ]
-            }
-        );
-        gsap.fromTo(".splash-line", 
-            { scaleX: 0 },
-            { scaleX: 1, duration: 1, delay: 0.4, ease: "power2.out" }
-        );
-        gsap.fromTo(".splash-side", 
-            { opacity: 0 },
-            { opacity: 0.4, duration: 1, delay: 0.6, ease: "power1.out" }
-        );
-        gsap.fromTo(".splash-footer", 
-            { opacity: 0 },
-            { opacity: 0.3, duration: 1, delay: 0.8, ease: "power1.out" }
-        );
-    }, []);
-
-    const triggerCharacterExit = (containerEl: HTMLElement, index: number) => {
+    const triggerCharacterExit = (containerEl: HTMLElement ) => {
         const parent = containerRef.current;
         if (!parent || !beamsContainerRef.current) return;
         const parentRect = parent.getBoundingClientRect();
         const rect = containerEl.getBoundingClientRect();
         const relativeX = rect.left + rect.width / 2 - parentRect.left;
         const textY = rect.top + rect.height / 2 - parentRect.top;
+
 
         // 1. Create upward exit beam (B&W Glow)
         const beam = document.createElement("div");
@@ -98,69 +51,47 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
 
         const beamColor = "linear-gradient(to top, transparent, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.9), transparent)";
         beam.style.background = beamColor;
-        beam.style.boxShadow = "0 0 20px rgba(255, 255, 255, 1), 0 0 40px rgba(255, 255, 255, 0.6)";
+        beam.style.top = `${textY}px`;
 
         beamsContainerRef.current.appendChild(beam);
 
-        gsap.fromTo(beam, 
-            { top: `${textY}px`, opacity: 0, scaleX: 1 },
-            { 
-                top: "-250px", 
-                opacity: 1, 
-                scaleX: 0.1,
-                duration: 0.7, 
-                ease: "power3.in",
-                onStart: () => { gsap.set(beam, { opacity: 1 }); },
-                onComplete: () => { beam.remove(); }
+        gsap.fromTo(beam,
+            { opacity: 0, scaleY: 0 },
+            {
+                opacity: 1,
+                scaleY: 1,
+                duration: 0.3,
+                ease: "power2.out",
+                transformOrigin: "center center"
             }
         );
 
-        // 2. Create rich spark particles (more particles!)
-        const particleCount = 25;
-        for (let p = 0; p < particleCount; p++) {
-            const spark = document.createElement("div");
-            spark.className = "absolute bg-white rounded-full pointer-events-none z-10";
-            const size = Math.random() * 4 + 2; // 2px to 6px
-            spark.style.width = `${size}px`;
-            spark.style.height = `${size}px`;
-            spark.style.left = `${relativeX + (Math.random() - 0.5) * rect.width}px`;
-            spark.style.top = `${textY + (Math.random() - 0.5) * rect.height}px`;
-            spark.style.boxShadow = "0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 0.8)";
-
-            beamsContainerRef.current.appendChild(spark);
-
-            gsap.fromTo(spark,
-                { opacity: 1, scale: 1 },
-                {
-                    x: () => (Math.random() - 0.5) * 120,
-                    y: () => -80 - Math.random() * 200,
-                    opacity: 0,
-                    scale: 0.1,
-                    duration: 0.6 + Math.random() * 0.9,
-                    ease: "power2.out",
-                    onComplete: () => { spark.remove(); }
-                }
-            );
-        }
-
-        // 3. Scramble and fade out the character
-        const glyphs = "$@#%&?*0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ░▒▓█";
-        const scrambleObj = { val: 0 };
-        
-        gsap.to(scrambleObj, {
-            val: 1,
-            duration: 0.6,
-            ease: "power1.in",
-            onUpdate: () => {
-                if (scrambleObj.val < 0.85) {
-                    const randomChar = glyphs[Math.floor(Math.random() * glyphs.length)];
-                    containerEl.textContent = randomChar;
-                    containerEl.style.color = "#ffffff";
-                    containerEl.style.filter = "drop-shadow(0 0 15px rgba(255, 255, 255, 0.9))";
-                } else {
-                    containerEl.style.opacity = "0";
+        // 2. Ascend container element and fade out
+        gsap.fromTo(containerEl,
+            { y: 0, opacity: 1 },
+            {
+                y: -600,
+                opacity: 0,
+                duration: 0.6,
+                delay: 0.1,
+                ease: "power1.in",
+                onUpdate: function() {
+                    const progress = this.progress();
+                    if (progress < 0.6) {
+                        containerEl.style.filter = `drop-shadow(0 0 ${15 * progress}px rgba(255, 255, 255, ${0.9 * progress}))`;
+                    } else {
+                        containerEl.style.opacity = "0";
+                    }
                 }
             }
+        );
+
+        // 3. Fade out beam after container leaves
+        gsap.to(beam, {
+            opacity: 0,
+            duration: 0.4,
+            delay: 0.5,
+            onComplete: () => { beam.remove(); }
         });
     };
 
@@ -186,15 +117,15 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
                 const isLine = Math.random() > 0.5;
                 const width = isLine ? Math.floor(Math.random() * 50) + 20 : Math.floor(Math.random() * 10) + 4;
                 const height = isLine ? 1 : Math.floor(Math.random() * 10) + 4;
-                
+
                 particle.className = "absolute bg-white pointer-events-none opacity-0 z-10";
                 particle.style.width = `${width}px`;
                 particle.style.height = `${height}px`;
                 particle.style.left = `${Math.random() * 100}%`;
                 particle.style.top = `${Math.random() * 100}%`;
-                
+
                 beamsContainerRef.current.appendChild(particle);
-                
+
                 gsap.fromTo(particle,
                     { opacity: 0, scaleX: 0.1 },
                     {
@@ -221,12 +152,12 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
                 label.className = "absolute text-white/30 font-mono text-[8px] tracking-[0.2em] pointer-events-none uppercase z-10 select-none";
                 label.style.left = `${10 + Math.random() * 80}%`;
                 label.style.top = `${25 + Math.random() * 50}%`;
-                
+
                 beamsContainerRef.current.appendChild(label);
-                
+
                 const word = cryptoWords[Math.floor(Math.random() * cryptoWords.length)];
                 const scrambleObj = { val: 0 };
-                
+
                 gsap.fromTo(label,
                     { opacity: 0 },
                     {
@@ -272,12 +203,275 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         containers.forEach((container, index) => {
             const reel = container.querySelector(".splash-char-reel");
             if (!reel) return;
-            
+
             // Stagger from left to right
             const delay = index * 0.1;
             // Slightly randomized duration for realistic unsynchronized reel stops
             const duration = 0.8 + Math.random() * 0.4;
-            
+
+            tl.to(reel, {
+                y: "-14em", // Translate by 14 characters to stop on the final target character
+                duration: duration,
+                ease: "back.out(1.5)", // Bounce effect like a real slot machine reel stopping
+                delay: delay,
+                onComplete: () => {
+                    triggerCharacterExit(container as HTMLElement, index);
+                }
+            }, 0);
+        });
+
+        // 4. Fade out the splash container overall after scramble completes
+        tl.to(".splash-container", {
+            duration: 0.8,
+            opacity: 0,
+            ease: "power2.out"
+        }, 2.0);
+    };
+
+    // Boot lines sequence
+    useEffect(() => {
+        if (currentLine < BOOT_TEXTS.length) {
+            const timer = setTimeout(() => {
+                setCurrentLine(prev => prev + 1);
+            }, 250);
+            return () => clearTimeout(timer);
+        } else if (!isExiting) {
+            const timer = setTimeout(() => {
+                setIsExiting(true);
+                triggerGlitchExit();
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [currentLine, isExiting]);
+
+    // Entrance animation for Logo and basic elements
+    useEffect(() => {
+        gsap.fromTo(".splash-title",
+            { opacity: 0, y: 30, skewX: -20 },
+            {
+                opacity: 1,
+                y: 0,
+                skewX: 0,
+                duration: 1.2,
+                ease: "power4.out",
+                keyframes: [
+                    { opacity: 0.3, skewX: 10, duration: 0.1 },
+                    { opacity: 0.1, duration: 0.05 },
+                    { opacity: 0.9, skewX: -5, duration: 0.15 },
+                    { opacity: 1, skewX: 0, duration: 0.9 }
+                ]
+            }
+        );
+        gsap.fromTo(".splash-line",
+            { scaleX: 0 },
+            { scaleX: 1, duration: 1, delay: 0.4, ease: "power2.out" }
+        );
+        gsap.fromTo(".splash-side",
+            { opacity: 0 },
+            { opacity: 0.4, duration: 1, delay: 0.6, ease: "power1.out" }
+        );
+        gsap.fromTo(".splash-footer",
+            { opacity: 0 },
+            { opacity: 0.3, duration: 1, delay: 0.8, ease: "power1.out" }
+        );
+    }, []);
+
+    const triggerCharacterExit = (containerEl: HTMLElement ) => {
+        const parent = containerRef.current;
+        if (!parent || !beamsContainerRef.current) return;
+        const parentRect = parent.getBoundingClientRect();
+        const rect = containerEl.getBoundingClientRect();
+        const relativeX = rect.left + rect.width / 2 - parentRect.left;
+        const textY = rect.top + rect.height / 2 - parentRect.top;
+
+
+        // 1. Create upward exit beam (B&W Glow)
+        const beam = document.createElement("div");
+        beam.className = "absolute w-[3px] h-[250px] opacity-0 pointer-events-none rounded-full z-10";
+        beam.style.left = `${relativeX}px`;
+
+        const beamColor = "linear-gradient(to top, transparent, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.9), transparent)";
+        beam.style.background = beamColor;
+        beam.style.boxShadow = "0 0 20px rgba(255, 255, 255, 1), 0 0 40px rgba(255, 255, 255, 0.6)";
+
+        beamsContainerRef.current.appendChild(beam);
+
+        gsap.fromTo(beam,
+            { top: `${textY}px`, opacity: 0, scaleX: 1 },
+            {
+                top: "-250px",
+                opacity: 1,
+                scaleX: 0.1,
+                duration: 0.7,
+                ease: "power3.in",
+                onStart: () => { gsap.set(beam, { opacity: 1 }); },
+                onComplete: () => { beam.remove(); }
+            }
+        );
+
+        // 2. Create rich spark particles (more particles!)
+        const particleCount = 25;
+        for (let p = 0; p < particleCount; p++) {
+            const spark = document.createElement("div");
+            spark.className = "absolute bg-white rounded-full pointer-events-none z-10";
+            const size = Math.random() * 4 + 2; // 2px to 6px
+            spark.style.width = `${size}px`;
+            spark.style.height = `${size}px`;
+            spark.style.left = `${relativeX + (Math.random() - 0.5) * rect.width}px`;
+            spark.style.top = `${textY + (Math.random() - 0.5) * rect.height}px`;
+            spark.style.boxShadow = "0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 0.8)";
+
+            beamsContainerRef.current.appendChild(spark);
+
+            gsap.fromTo(spark,
+                { opacity: 1, scale: 1 },
+                {
+                    x: () => (Math.random() - 0.5) * 120,
+                    y: () => -80 - Math.random() * 200,
+                    opacity: 0,
+                    scale: 0.1,
+                    duration: 0.6 + Math.random() * 0.9,
+                    ease: "power2.out",
+                    onComplete: () => { spark.remove(); }
+                }
+            );
+        }
+
+        // 3. Scramble and fade out the character
+        const glyphs = "$@#%&?*0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ░▒▓█";
+        const scrambleObj = { val: 0 };
+
+        gsap.to(scrambleObj, {
+            val: 1,
+            duration: 0.6,
+            ease: "power1.in",
+            onUpdate: () => {
+                if (scrambleObj.val < 0.85) {
+                    const randomChar = glyphs[Math.floor(Math.random() * glyphs.length)];
+                    containerEl.textContent = randomChar;
+                    containerEl.style.color = "#ffffff";
+                    containerEl.style.filter = "drop-shadow(0 0 15px rgba(255, 255, 255, 0.9))";
+                } else {
+                    containerEl.style.opacity = "0";
+                }
+            }
+        });
+    };
+
+    const triggerGlitchExit = () => {
+        const tl = gsap.timeline({
+            onComplete: onFinish
+        });
+
+        // 1. Fade out secondary elements immediately as the spin begins
+        tl.to([".splash-terminal-line", ".splash-line", ".splash-footer", ".splash-side"], {
+            duration: 0.4,
+            opacity: 0,
+            ease: "power2.out"
+        }, 0);
+
+        // 2. Start background slot/cyberpunk noise and glitch particles early
+        tl.add(() => {
+            if (!beamsContainerRef.current) return;
+
+            // 2b. Create B&W Glitch Particles (increased count to 80 for richer details)
+            for (let p = 0; p < 80; p++) {
+                const particle = document.createElement("div");
+                const isLine = Math.random() > 0.5;
+                const width = isLine ? Math.floor(Math.random() * 50) + 20 : Math.floor(Math.random() * 10) + 4;
+                const height = isLine ? 1 : Math.floor(Math.random() * 10) + 4;
+
+                particle.className = "absolute bg-white pointer-events-none opacity-0 z-10";
+                particle.style.width = `${width}px`;
+                particle.style.height = `${height}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+
+                beamsContainerRef.current.appendChild(particle);
+
+                gsap.fromTo(particle,
+                    { opacity: 0, scaleX: 0.1 },
+                    {
+                        opacity: () => Math.random() * 0.9 + 0.1,
+                        scaleX: () => Math.random() > 0.5 ? 3 : 0.5,
+                        x: () => (Math.random() - 0.5) * 80,
+                        duration: Math.random() * 0.5 + 0.15,
+                        delay: Math.random() * 0.8,
+                        ease: "none",
+                        repeat: Math.floor(Math.random() * 2) + 1,
+                        yoyo: true,
+                        onComplete: () => { particle.remove(); }
+                    }
+                );
+            }
+
+            // 2c. Create Scrambling Encrypted Words (increased count to 10)
+            const cryptoWords = [
+                "SYS_TERMINATING", "SIG_ERR_LOCK", "0xFF00FF", "SYSTEM_EXIT_404",
+                "MEM_DISSOLVE", "ENCRYPT_SYS_CORE", "NET_DROP_P2P", "DAFT_PUNK_EXIT"
+            ];
+            for (let w = 0; w < 10; w++) {
+                const label = document.createElement("div");
+                label.className = "absolute text-white/30 font-mono text-[8px] tracking-[0.2em] pointer-events-none uppercase z-10 select-none";
+                label.style.left = `${10 + Math.random() * 80}%`;
+                label.style.top = `${25 + Math.random() * 50}%`;
+
+                beamsContainerRef.current.appendChild(label);
+
+                const word = cryptoWords[Math.floor(Math.random() * cryptoWords.length)];
+                const scrambleObj = { val: 0 };
+
+                gsap.fromTo(label,
+                    { opacity: 0 },
+                    {
+                        opacity: 0.4,
+                        duration: 0.2,
+                        delay: Math.random() * 0.5,
+                        onStart: () => {
+                            gsap.to(scrambleObj, {
+                                val: 1,
+                                duration: 0.8,
+                                ease: "none",
+                                onUpdate: () => {
+                                    let result = "";
+                                    const glyphs = "0123456789ABCDEF!@#%&*";
+                                    for (let i = 0; i < word.length; i++) {
+                                        if (word[i] === "_" || word[i] === " ") {
+                                            result += word[i];
+                                        } else if (Math.random() < scrambleObj.val) {
+                                            result += word[i];
+                                        } else {
+                                            result += glyphs[Math.floor(Math.random() * glyphs.length)];
+                                        }
+                                    }
+                                    label.textContent = result;
+                                }
+                            });
+                        },
+                        onComplete: () => {
+                            gsap.to(label, {
+                                opacity: 0,
+                                duration: 0.2,
+                                delay: 0.3,
+                                onComplete: () => { label.remove(); }
+                            });
+                        }
+                    }
+                );
+            }
+        }, 0.2);
+
+        // 3. Slot Machine Reels Spin
+        const containers = document.querySelectorAll(".splash-char-container");
+        containers.forEach((container, index) => {
+            const reel = container.querySelector(".splash-char-reel");
+            if (!reel) return;
+
+            // Stagger from left to right
+            const delay = index * 0.1;
+            // Slightly randomized duration for realistic unsynchronized reel stops
+            const duration = 0.8 + Math.random() * 0.4;
+
             tl.to(reel, {
                 y: "-14em", // Translate by 14 characters to stop on the final target character
                 duration: duration,
