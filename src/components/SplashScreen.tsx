@@ -78,8 +78,8 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
             scaleY: () => 0.7 + Math.random() * 0.6,
             opacity: () => Math.random() > 0.2 ? 1 : 0.05,
             textShadow: () => Math.random() > 0.5 
-                ? "6px -2px 0px rgba(255,0,0,0.8), -6px 2px 0px rgba(0,255,255,0.8)" 
-                : "-3px 4px 0px rgba(255,0,0,0.6), 3px -4px 0px rgba(0,255,255,0.6)",
+                ? "6px -2px 0px rgba(255,255,255,0.8), -6px 2px 0px rgba(100,100,100,0.8)" 
+                : "-3px 4px 0px rgba(255,255,255,0.6), 3px -4px 0px rgba(100,100,100,0.6)",
             ease: "none",
             repeat: 3,
             yoyo: true
@@ -94,36 +94,114 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
             stagger: 0.03
         }, "<");
 
-        // 2. Encryption Scramble and upward beams
+        // 2. Encryption Scramble and upward beams (Grayscale / B&W)
         tl.add(() => {
             const chars = document.querySelectorAll(".splash-char");
             const parent = containerRef.current;
             if (!parent || !beamsContainerRef.current) return;
             const parentRect = parent.getBoundingClientRect();
 
-            chars.forEach((charEl, idx) => {
+            // 2b. Create B&W Glitch Particles
+            for (let p = 0; p < 20; p++) {
+                const particle = document.createElement("div");
+                const isLine = Math.random() > 0.5;
+                const width = isLine ? Math.floor(Math.random() * 40) + 15 : Math.floor(Math.random() * 8) + 3;
+                const height = isLine ? 1 : Math.floor(Math.random() * 8) + 3;
+                
+                particle.className = "absolute bg-white pointer-events-none opacity-0 z-10";
+                particle.style.width = `${width}px`;
+                particle.style.height = `${height}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                beamsContainerRef.current?.appendChild(particle);
+                
+                gsap.fromTo(particle,
+                    { opacity: 0, scaleX: 0.1 },
+                    {
+                        opacity: () => Math.random() * 0.9 + 0.1,
+                        scaleX: () => Math.random() > 0.5 ? 2.5 : 0.4,
+                        x: () => (Math.random() - 0.5) * 60,
+                        duration: Math.random() * 0.4 + 0.1,
+                        delay: Math.random() * 0.6,
+                        ease: "none",
+                        repeat: Math.floor(Math.random() * 2) + 1,
+                        yoyo: true,
+                        onComplete: () => { particle.remove(); }
+                    }
+                );
+            }
+
+            // 2c. Create Scrambling Encrypted Words
+            const cryptoWords = [
+                "SYS_TERMINATING", "SIG_ERR_LOCK", "0xFF00FF", "SYSTEM_EXIT_404",
+                "MEM_DISSOLVE", "ENCRYPT_SYS_CORE", "NET_DROP_P2P", "DAFT_PUNK_EXIT"
+            ];
+            for (let w = 0; w < 6; w++) {
+                const label = document.createElement("div");
+                label.className = "absolute text-white/30 font-mono text-[8px] tracking-[0.2em] pointer-events-none uppercase z-10 select-none";
+                label.style.left = `${10 + Math.random() * 80}%`;
+                label.style.top = `${25 + Math.random() * 50}%`;
+                
+                beamsContainerRef.current?.appendChild(label);
+                
+                const word = cryptoWords[Math.floor(Math.random() * cryptoWords.length)];
+                const scrambleObj = { val: 0 };
+                
+                gsap.fromTo(label,
+                    { opacity: 0 },
+                    {
+                        opacity: 0.4,
+                        duration: 0.2,
+                        delay: Math.random() * 0.5,
+                        onStart: () => {
+                            gsap.to(scrambleObj, {
+                                val: 1,
+                                duration: 0.8,
+                                ease: "none",
+                                onUpdate: () => {
+                                    let result = "";
+                                    const glyphs = "0123456789ABCDEF!@#%&*";
+                                    for (let i = 0; i < word.length; i++) {
+                                        if (word[i] === "_" || word[i] === " ") {
+                                            result += word[i];
+                                        } else if (Math.random() < scrambleObj.val) {
+                                            result += word[i];
+                                        } else {
+                                            result += glyphs[Math.floor(Math.random() * glyphs.length)];
+                                        }
+                                    }
+                                    label.textContent = result;
+                                }
+                            });
+                        },
+                        onComplete: () => {
+                            gsap.to(label, {
+                                opacity: 0,
+                                duration: 0.2,
+                                delay: 0.3,
+                                onComplete: () => { label.remove(); }
+                            });
+                        }
+                    }
+                );
+            }
+
+            chars.forEach((charEl) => {
                 const char = charEl.getAttribute("data-char");
                 if (!char) return;
 
                 const rect = charEl.getBoundingClientRect();
                 const relativeX = rect.left + rect.width / 2 - parentRect.left;
 
-                // Create upward exit beam
+                // Create upward exit beam (B&W Glow)
                 const beam = document.createElement("div");
                 beam.className = "absolute w-[2px] h-[180px] opacity-0 pointer-events-none rounded-full z-10";
                 beam.style.left = `${relativeX}px`;
 
-                // Alternating neon colors matching Daft Punk helmets
-                // Thomas (silver/cyan), Guy-Manuel (gold/red)
-                const isThomas = idx % 2 === 0;
-                const beamColor = isThomas 
-                    ? "linear-gradient(to top, transparent, rgba(6, 182, 212, 0.8), rgba(6, 182, 212, 1), rgba(6, 182, 212, 0.8), transparent)" 
-                    : "linear-gradient(to top, transparent, rgba(239, 68, 68, 0.8), rgba(239, 68, 68, 1), rgba(239, 68, 68, 0.8), transparent)";
-                
+                const beamColor = "linear-gradient(to top, transparent, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.8), transparent)";
                 beam.style.background = beamColor;
-                beam.style.boxShadow = isThomas 
-                    ? "0 0 16px rgba(6, 182, 212, 0.9), 0 0 32px rgba(6, 182, 212, 0.6)" 
-                    : "0 0 16px rgba(239, 68, 68, 0.9), 0 0 32px rgba(239, 68, 68, 0.6)";
+                beam.style.boxShadow = "0 0 16px rgba(255, 255, 255, 0.9), 0 0 32px rgba(255, 255, 255, 0.5)";
 
                 beamsContainerRef.current?.appendChild(beam);
 
@@ -159,8 +237,8 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
                         if (scrambleObj.val < 0.85) {
                             const randomChar = glyphs[Math.floor(Math.random() * glyphs.length)];
                             charEl.textContent = randomChar;
-                            (charEl as HTMLElement).style.color = isThomas ? "#06b6d4" : "#ef4444";
-                            (charEl as HTMLElement).style.filter = "drop-shadow(0 0 10px currentColor)";
+                            (charEl as HTMLElement).style.color = "#ffffff";
+                            (charEl as HTMLElement).style.filter = "drop-shadow(0 0 12px rgba(255, 255, 255, 0.8))";
                         } else {
                             (charEl as HTMLElement).style.opacity = "0";
                         }
