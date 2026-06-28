@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { gsap } from "gsap";
 
 const BOOT_TEXTS = [
@@ -11,6 +11,10 @@ const BOOT_TEXTS = [
 export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
     const [currentLine, setCurrentLine] = useState(0);
     const [isExiting, setIsExiting] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const beamsContainerRef = useRef<HTMLDivElement>(null);
+
+    const words = ["DAFT", "PUNK"];
 
     // Boot lines sequence
     useEffect(() => {
@@ -66,8 +70,8 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         });
 
         // 1. Violent High-Tech Chromatic Glitch on Title & Lines
-        tl.to(".splash-title", {
-            duration: 0.4,
+        tl.to(".splash-char", {
+            duration: 0.3,
             skewX: () => (Math.random() - 0.5) * 45,
             x: () => (Math.random() - 0.5) * 35,
             y: () => (Math.random() - 0.5) * 15,
@@ -77,7 +81,7 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
                 ? "6px -2px 0px rgba(255,0,0,0.8), -6px 2px 0px rgba(0,255,255,0.8)" 
                 : "-3px 4px 0px rgba(255,0,0,0.6), 3px -4px 0px rgba(0,255,255,0.6)",
             ease: "none",
-            repeat: 6,
+            repeat: 3,
             yoyo: true
         });
 
@@ -90,24 +94,95 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
             stagger: 0.03
         }, "<");
 
-        // 2. Analog/CRT horizontal collapsing turn-off animation
-        tl.to(".splash-container", {
-            duration: 0.15,
-            scaleY: 0.005,
-            filter: "brightness(5) contrast(3) invert(1)",
-            ease: "power4.inOut"
+        // 2. Encryption Scramble and upward beams
+        tl.add(() => {
+            const chars = document.querySelectorAll(".splash-char");
+            const parent = containerRef.current;
+            if (!parent || !beamsContainerRef.current) return;
+            const parentRect = parent.getBoundingClientRect();
+
+            chars.forEach((charEl, idx) => {
+                const char = charEl.getAttribute("data-char");
+                if (!char) return;
+
+                const rect = charEl.getBoundingClientRect();
+                const relativeX = rect.left + rect.width / 2 - parentRect.left;
+
+                // Create upward exit beam
+                const beam = document.createElement("div");
+                beam.className = "absolute w-[2px] h-[180px] opacity-0 pointer-events-none rounded-full z-10";
+                beam.style.left = `${relativeX}px`;
+
+                // Alternating neon colors matching Daft Punk helmets
+                // Thomas (silver/cyan), Guy-Manuel (gold/red)
+                const isThomas = idx % 2 === 0;
+                const beamColor = isThomas 
+                    ? "linear-gradient(to top, transparent, rgba(6, 182, 212, 0.8), rgba(6, 182, 212, 1), rgba(6, 182, 212, 0.8), transparent)" 
+                    : "linear-gradient(to top, transparent, rgba(239, 68, 68, 0.8), rgba(239, 68, 68, 1), rgba(239, 68, 68, 0.8), transparent)";
+                
+                beam.style.background = beamColor;
+                beam.style.boxShadow = isThomas 
+                    ? "0 0 16px rgba(6, 182, 212, 0.9), 0 0 32px rgba(6, 182, 212, 0.6)" 
+                    : "0 0 16px rgba(239, 68, 68, 0.9), 0 0 32px rgba(239, 68, 68, 0.6)";
+
+                beamsContainerRef.current?.appendChild(beam);
+
+                // Animate beam upward: from text position (middle) up to top of screen
+                const textY = rect.top + rect.height / 2 - parentRect.top;
+                
+                // Stagger beams randomly
+                const beamDelay = Math.random() * 0.3;
+
+                gsap.fromTo(beam, 
+                    { top: `${textY}px`, opacity: 0 },
+                    { 
+                        top: "-180px", 
+                        opacity: 1, 
+                        duration: 0.8, 
+                        delay: beamDelay,
+                        ease: "power2.in",
+                        onStart: () => { gsap.set(beam, { opacity: 1 }); },
+                        onComplete: () => { beam.remove(); }
+                    }
+                );
+
+                // Scramble and fade out the character as the beam leaves
+                const glyphs = "$@#%&?*0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ░▒▓█";
+                const scrambleObj = { val: 0 };
+                
+                gsap.to(scrambleObj, {
+                    val: 1,
+                    duration: 0.7,
+                    delay: beamDelay,
+                    ease: "power1.in",
+                    onUpdate: () => {
+                        if (scrambleObj.val < 0.85) {
+                            const randomChar = glyphs[Math.floor(Math.random() * glyphs.length)];
+                            charEl.textContent = randomChar;
+                            (charEl as HTMLElement).style.color = isThomas ? "#06b6d4" : "#ef4444";
+                            (charEl as HTMLElement).style.filter = "drop-shadow(0 0 10px currentColor)";
+                        } else {
+                            (charEl as HTMLElement).style.opacity = "0";
+                        }
+                    }
+                });
+            });
         });
-        
+
+        // 3. Fade out the splash container overall after scramble completes
         tl.to(".splash-container", {
-            duration: 0.08,
-            scaleX: 0,
+            duration: 0.8,
+            delay: 0.5,
             opacity: 0,
-            ease: "power4.in"
+            ease: "power2.out"
         });
     };
 
     return (
-        <div className="splash-container fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center overflow-hidden">
+        <div ref={containerRef} className="splash-container fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center overflow-hidden">
+            {/* ── BEAMS CONTAINER ─────────────────────────────── */}
+            <div ref={beamsContainerRef} className="absolute inset-0 pointer-events-none overflow-hidden z-20" />
+
             {/* ── LEFT DOTS ──────────────────────────────────── */}
             <div className="splash-side absolute left-6 top-1/2 -translate-y-1/2 hidden md:flex flex-col gap-4">
                 {[0, 1, 2].map((i) => (
@@ -133,14 +208,26 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
             {/* ── CENTRAL GIANT LOGO ─────────────────────────── */}
             <div className="relative flex items-center justify-center">
                 <h1
-                    className="splash-title text-white font-black uppercase leading-none select-none text-center"
+                    className="splash-title text-white font-black uppercase leading-none select-none text-center flex flex-wrap justify-center"
                     style={{
                         fontSize: "clamp(64px, 12vw, 160px)",
                         letterSpacing: "-0.04em",
                         fontFamily: "'Arial Black', 'Arial', sans-serif",
                     }}
                 >
-                    DAFT PUNK
+                    {words.map((word, wordIdx) => (
+                        <span key={wordIdx} className="inline-block whitespace-nowrap mx-[0.1em]">
+                            {word.split("").map((char, charIdx) => (
+                                <span
+                                    key={charIdx}
+                                    className="splash-char inline-block"
+                                    data-char={char}
+                                >
+                                    {char}
+                                </span>
+                            ))}
+                        </span>
+                    ))}
                 </h1>
 
                 {/* Technical line under Logo */}
