@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
-import heroImg from "../assets/imgs/dk.jpg";
+// import heroImg from "../assets/imgs/dk.jpg";
 
 export default function Home() {
     return (
         <div className="relative w-full min-h-screen bg-black overflow-hidden flex flex-col">
             {/* ── LEFT DOTS — hidden on small mobile ──────────── */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, x: -15 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 1.0, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -17,7 +17,7 @@ export default function Home() {
             </motion.div>
 
             {/* ── RIGHT VERTICAL LABEL — hidden on small mobile ── */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, x: 15 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 1.0, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -37,10 +37,10 @@ export default function Home() {
                     layoutId="main-title"
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ 
+                    transition={{
                         layout: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
-                        duration: 1.2, 
-                        ease: [0.16, 1, 0.3, 1] 
+                        duration: 1.2,
+                        ease: [0.16, 1, 0.3, 1]
                     }}
                     className="text-white font-black uppercase leading-none select-none text-center"
                     style={{
@@ -54,8 +54,8 @@ export default function Home() {
                 </motion.h1>
             </div>
 
-            {/* ── IMAGE CONTENT ───────────────────────────── */}
-            <div className="absolute inset-0 flex items-end justify-center z-20 pointer-events-none">
+            {/* ── IMAGE CONTENT ───────────────────────────── 
+                <div className="absolute inset-0 flex items-end justify-center z-20 pointer-events-none">
                 <motion.div
                     initial={{ opacity: 0, y: 80, scale: 1.05 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -74,16 +74,17 @@ export default function Home() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
                 </motion.div>
             </div>
+            */}
 
             {/* ── BOTTOM SCROLL ICON ──────────────────────────── */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.0, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className="absolute bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-1"
             >
                 <div className="w-[1px] h-4 bg-white opacity-30" />
-                <motion.div 
+                <motion.div
                     animate={{ y: [0, 5, 0] }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     className="w-4 h-4 rounded-full border border-white opacity-40 flex items-center justify-center"
