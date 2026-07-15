@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { gsap } from "gsap";
 
 const BOOT_TEXTS = [
@@ -8,13 +8,13 @@ const BOOT_TEXTS = [
     "ACCESS: GRANTED",
 ];
 
+const words = ["DAFT", "PUNK"];
+
 export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
     const [currentLine, setCurrentLine] = useState(0);
     const [isExiting, setIsExiting] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const beamsContainerRef = useRef<HTMLDivElement>(null);
-
-    const words = ["DAFT", "PUNK"];
 
     // Generate reel data for the slot machine spin effect
     const reelsData = useMemo(() => {
@@ -37,55 +37,7 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
 
 
 
-    // Boot lines sequence
-    useEffect(() => {
-        if (currentLine < BOOT_TEXTS.length) {
-            const timer = setTimeout(() => {
-                setCurrentLine(prev => prev + 1);
-            }, 250);
-            return () => clearTimeout(timer);
-        } else if (!isExiting) {
-            const timer = setTimeout(() => {
-                setIsExiting(true);
-                triggerGlitchExit();
-            }, 1000);
-            return () => clearTimeout(timer);
-        }
-    }, [currentLine, isExiting]);
-
-    // Entrance animation for Logo and basic elements
-    useEffect(() => {
-        gsap.fromTo(".splash-title",
-            { opacity: 0, y: 30, skewX: -20 },
-            {
-                opacity: 1,
-                y: 0,
-                skewX: 0,
-                duration: 1.2,
-                ease: "power4.out",
-                keyframes: [
-                    { opacity: 0.3, skewX: 10, duration: 0.1 },
-                    { opacity: 0.1, duration: 0.05 },
-                    { opacity: 0.9, skewX: -5, duration: 0.15 },
-                    { opacity: 1, skewX: 0, duration: 0.9 }
-                ]
-            }
-        );
-        gsap.fromTo(".splash-line",
-            { scaleX: 0 },
-            { scaleX: 1, duration: 1, delay: 0.4, ease: "power2.out" }
-        );
-        gsap.fromTo(".splash-side",
-            { opacity: 0 },
-            { opacity: 0.4, duration: 1, delay: 0.6, ease: "power1.out" }
-        );
-        gsap.fromTo(".splash-footer",
-            { opacity: 0 },
-            { opacity: 0.3, duration: 1, delay: 0.8, ease: "power1.out" }
-        );
-    }, []);
-
-    const triggerCharacterExit = (containerEl: HTMLElement ) => {
+    const triggerCharacterExit = useCallback((containerEl: HTMLElement) => {
         const parent = containerRef.current;
         if (!parent || !beamsContainerRef.current) return;
         const parentRect = parent.getBoundingClientRect();
@@ -165,9 +117,9 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
                 }
             }
         });
-    };
+    }, []);
 
-    const triggerGlitchExit = () => {
+    const triggerGlitchExit = useCallback(() => {
         const tl = gsap.timeline({
             onComplete: onFinish
         });
@@ -298,7 +250,55 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
             opacity: 0,
             ease: "power2.out"
         }, 2.0);
-    };
+    }, [onFinish, triggerCharacterExit]);
+
+    // Boot lines sequence
+    useEffect(() => {
+        if (currentLine < BOOT_TEXTS.length) {
+            const timer = setTimeout(() => {
+                setCurrentLine(prev => prev + 1);
+            }, 250);
+            return () => clearTimeout(timer);
+        } else if (!isExiting) {
+            const timer = setTimeout(() => {
+                setIsExiting(true);
+                triggerGlitchExit();
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [currentLine, isExiting, triggerGlitchExit]);
+
+    // Entrance animation for Logo and basic elements
+    useEffect(() => {
+        gsap.fromTo(".splash-title",
+            { opacity: 0, y: 30, skewX: -20 },
+            {
+                opacity: 1,
+                y: 0,
+                skewX: 0,
+                duration: 1.2,
+                ease: "power4.out",
+                keyframes: [
+                    { opacity: 0.3, skewX: 10, duration: 0.1 },
+                    { opacity: 0.1, duration: 0.05 },
+                    { opacity: 0.9, skewX: -5, duration: 0.15 },
+                    { opacity: 1, skewX: 0, duration: 0.9 }
+                ]
+            }
+        );
+        gsap.fromTo(".splash-line",
+            { scaleX: 0 },
+            { scaleX: 1, duration: 1, delay: 0.4, ease: "power2.out" }
+        );
+        gsap.fromTo(".splash-side",
+            { opacity: 0 },
+            { opacity: 0.4, duration: 1, delay: 0.6, ease: "power1.out" }
+        );
+        gsap.fromTo(".splash-footer",
+            { opacity: 0 },
+            { opacity: 0.3, duration: 1, delay: 0.8, ease: "power1.out" }
+        );
+    }, []);
 
     return (
         <div ref={containerRef} className="splash-container fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center overflow-hidden">
