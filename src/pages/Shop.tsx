@@ -6,7 +6,7 @@ import img3 from "../assets/imgs/dk4.jpg";
 import img4 from "../assets/imgs/dk5.jpg";
 import img5 from "../assets/imgs/dk.jpg";
 import img6 from "../assets/imgs/dk6.jpg";
-import { ShoppingBag, X, Trash2, ShieldCheck, Terminal, Heart, Sparkles, SlidersHorizontal, Loader2 } from "lucide-react";
+import { ShoppingBag, X, Trash2, ShieldCheck, Terminal, Heart, SlidersHorizontal, Loader2 } from "lucide-react";
 
 interface Product {
     id: number;
